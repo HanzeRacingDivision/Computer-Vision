@@ -1,5 +1,5 @@
 [submodule "depthai-core"]
-	path = YOLOv5/depthai-core
+	path = YOLO/depthai-core
 	url = https://github.com/luxonis/depthai-core.git
 	branch = main
 
