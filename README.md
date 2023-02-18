@@ -1,3 +1,9 @@
+# To run the file with talker/listeners
+run in termnial: 
+```
+roslaunch hard_hanze cv.launch
+```
+
 # How to use/compile/build the computer vision module (Main module)
 ## Library dependencies
 - cmake >= 3.4
