@@ -7,7 +7,7 @@
 
 // Includes common necessary includes for development using depthai library
 
-#define BLOB_PATH "../shaves/416_half_shave_summer_FSE2022.blob"
+#define BLOB_PATH "../shaves/v7tiny1000_openvino_2021.4_6shave.blob"
 
 static std::atomic<bool> syncNN{true};
 
@@ -16,7 +16,7 @@ int main(int argc, char **argv)
      using namespace std::chrono;
      using json = nlohmann::json;
 
-     std::ifstream f("../details/FSN2022.json", std::ifstream::in);
+     std::ifstream f("../details/v7tiny1000.json", std::ifstream::in);
      json j;
      f >> j;
 
@@ -24,12 +24,12 @@ int main(int argc, char **argv)
      std::vector<std::string> labels = j["mappings"]["labels"];
      std::vector<std::string> labelMap = labels;
 
-     // Getting the input size 
+     // Getting the input size
      std::string inputSizeStr = j["nn_config"]["input_size"];
      inputSizeStr = inputSizeStr.substr(0, 3);
      int inputSize = stoi(inputSizeStr);
 
-     //Getting the YOLO specific parameters (anchors & masks)
+     // Getting the YOLO specific parameters (anchors & masks)
      std::vector<float> anchors = j["nn_config"]["NN_specific_metadata"]["anchors"];
      std::map<std::string, std::vector<int>> masks = j["nn_config"]["NN_specific_metadata"]["anchor_masks"];
 
@@ -128,6 +128,7 @@ int main(int argc, char **argv)
      int counter = 0;
      float fps = 0;
      auto color = cv::Scalar(255, 255, 255);
+     auto colorText = cv::Scalar(0, 255, 255);
      bool printOutputLayersOnce = true;
 
      while (true)
@@ -192,27 +193,27 @@ int main(int argc, char **argv)
                {
                     labelStr = labelMap[labelIndex];
                }
-               cv::putText(frame, labelStr, cv::Point(x1 + 10, y1 + 20), cv::FONT_HERSHEY_TRIPLEX, 0.5, 255);
+               cv::putText(frame, labelStr, cv::Point(x1 + 10, y1 + 20), cv::FONT_HERSHEY_DUPLEX, 0.5, 255);
                std::stringstream confStr;
                confStr << std::fixed << std::setprecision(2) << detection.confidence * 100;
-               cv::putText(frame, confStr.str(), cv::Point(x1 + 10, y1 + 35), cv::FONT_HERSHEY_TRIPLEX, 0.5, 255);
+               cv::putText(frame, confStr.str(), cv::Point(x1 + 10, y1 + 35), cv::FONT_HERSHEY_DUPLEX, 0.5, 255);
 
                std::stringstream depthX;
                depthX << "X: " << (int)detection.spatialCoordinates.x << " mm";
-               cv::putText(frame, depthX.str(), cv::Point(x1 + 10, y1 + 50), cv::FONT_HERSHEY_TRIPLEX, 0.5, 255);
+               cv::putText(frame, depthX.str(), cv::Point(x1 + 10, y1 + 50), cv::FONT_HERSHEY_DUPLEX, 0.5, colorText);
                std::stringstream depthY;
                depthY << "Y: " << (int)detection.spatialCoordinates.y << " mm";
-               cv::putText(frame, depthY.str(), cv::Point(x1 + 10, y1 + 65), cv::FONT_HERSHEY_TRIPLEX, 0.5, 255);
+               cv::putText(frame, depthY.str(), cv::Point(x1 + 10, y1 + 65), cv::FONT_HERSHEY_DUPLEX, 0.5, colorText);
                std::stringstream depthZ;
                depthZ << "Z: " << (int)detection.spatialCoordinates.z << " mm";
-               cv::putText(frame, depthZ.str(), cv::Point(x1 + 10, y1 + 80), cv::FONT_HERSHEY_TRIPLEX, 0.5, 255);
+               cv::putText(frame, depthZ.str(), cv::Point(x1 + 10, y1 + 80), cv::FONT_HERSHEY_DUPLEX, 0.5, colorText);
 
-               cv::rectangle(frame, cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)), color, cv::FONT_HERSHEY_SIMPLEX);
+               cv::rectangle(frame, cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)), color, cv::);
           }
 
           std::stringstream fpsStr;
           fpsStr << std::fixed << std::setprecision(2) << fps;
-          cv::putText(frame, fpsStr.str(), cv::Point(2, imgFrame->getHeight() - 4), cv::FONT_HERSHEY_TRIPLEX, 0.4, color);
+          cv::putText(frame, fpsStr.str(), cv::Point(2, imgFrame->getHeight() - 4), cv::FONT_HERSHEY_DUPLEX, 0.4, color);
 
           cv::imshow("depth", depthFrameColor);
           cv::imshow("rgb", frame);
