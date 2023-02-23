@@ -35,6 +35,9 @@ int main(int argc, char **argv)
 
      std::string nnPath(BLOB_PATH);
 
+     int numberOfClasses = j["nn_config"]["NN_specific_metadata"]["classes"];
+     int numberOfCoordonates = j["nn_config"]["NN_specific_metadata"]["coordinates"];
+
      // If path to blob specified, use that
      if (argc > 1)
      {
@@ -66,6 +69,7 @@ int main(int argc, char **argv)
 
      // Properties
      camRgb->setPreviewSize(inputSize, inputSize);
+     
      camRgb->setResolution(dai::ColorCameraProperties::SensorResolution::THE_1080_P);
      camRgb->setInterleaved(false);
      camRgb->setColorOrder(dai::ColorCameraProperties::ColorOrder::BGR);
@@ -89,8 +93,8 @@ int main(int argc, char **argv)
      spatialDetectionNetwork->setDepthUpperThreshold(5000);
 
      // YOLO specific parameters
-     spatialDetectionNetwork->setNumClasses(2);
-     spatialDetectionNetwork->setCoordinateSize(4);
+     spatialDetectionNetwork->setNumClasses(numberOfClasses);
+     spatialDetectionNetwork->setCoordinateSize(numberOfCoordonates);
      spatialDetectionNetwork->setAnchors(anchors);
      spatialDetectionNetwork->setAnchorMasks(masks);
      spatialDetectionNetwork->setIouThreshold(0.5f);
@@ -193,10 +197,10 @@ int main(int argc, char **argv)
                {
                     labelStr = labelMap[labelIndex];
                }
-               cv::putText(frame, labelStr, cv::Point(x1 + 10, y1 + 20), cv::FONT_HERSHEY_DUPLEX, 0.5, 255);
+               cv::putText(frame, labelStr, cv::Point(x1 + 10, y1 + 20), cv::FONT_HERSHEY_DUPLEX, 0.5, colorText);
                std::stringstream confStr;
                confStr << std::fixed << std::setprecision(2) << detection.confidence * 100;
-               cv::putText(frame, confStr.str(), cv::Point(x1 + 10, y1 + 35), cv::FONT_HERSHEY_DUPLEX, 0.5, 255);
+               cv::putText(frame, confStr.str(), cv::Point(x1 + 10, y1 + 35), cv::FONT_HERSHEY_DUPLEX, 0.5, colorText);
 
                std::stringstream depthX;
                depthX << "X: " << (int)detection.spatialCoordinates.x << " mm";
@@ -208,7 +212,7 @@ int main(int argc, char **argv)
                depthZ << "Z: " << (int)detection.spatialCoordinates.z << " mm";
                cv::putText(frame, depthZ.str(), cv::Point(x1 + 10, y1 + 80), cv::FONT_HERSHEY_DUPLEX, 0.5, colorText);
 
-               cv::rectangle(frame, cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)), color, cv::);
+               cv::rectangle(frame, cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)), color, cv::FONT_HERSHEY_DUPLEX);               
           }
 
           std::stringstream fpsStr;
