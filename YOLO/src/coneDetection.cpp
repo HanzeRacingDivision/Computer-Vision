@@ -37,6 +37,8 @@ int main(int argc, char **argv)
 
      int numberOfClasses = j["nn_config"]["NN_specific_metadata"]["classes"];
      int numberOfCoordonates = j["nn_config"]["NN_specific_metadata"]["coordinates"];
+     float iouTreshold = j["nn_config"]["NN_specific_metadata"]["iou_threshold"];
+     float confidenceThreshold = j["nn_config"]["NN_specific_metadata"]["confidence_threshold"];
 
      // If path to blob specified, use that
      if (argc > 1)
@@ -86,7 +88,7 @@ int main(int argc, char **argv)
      stereo->setOutputSize(monoLeft->getResolutionWidth(), monoLeft->getResolutionHeight());
 
      spatialDetectionNetwork->setBlobPath(nnPath);
-     spatialDetectionNetwork->setConfidenceThreshold(0.5f);
+     spatialDetectionNetwork->setConfidenceThreshold(confidenceThreshold);
      spatialDetectionNetwork->input.setBlocking(false);
      spatialDetectionNetwork->setBoundingBoxScaleFactor(0.5);
      spatialDetectionNetwork->setDepthLowerThreshold(100);
@@ -97,7 +99,7 @@ int main(int argc, char **argv)
      spatialDetectionNetwork->setCoordinateSize(numberOfCoordonates);
      spatialDetectionNetwork->setAnchors(anchors);
      spatialDetectionNetwork->setAnchorMasks(masks);
-     spatialDetectionNetwork->setIouThreshold(0.5f);
+     spatialDetectionNetwork->setIouThreshold(iouTreshold);
 
      // Linking
      monoLeft->out.link(stereo->left);
